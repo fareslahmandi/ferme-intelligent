@@ -1,0 +1,13 @@
+streamlit
+streamlit-autorefresh
+requests
+pandas
+matplotlib
+folium
+streamlit-folium
+torch
+opencv-python
+numpy
+fastapi
+uvicorn
+pydantic

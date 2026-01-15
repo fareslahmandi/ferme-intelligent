@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Météo à {{ ville }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+        h1 { color: #333; }
+        .info { font-size: 18px; margin: 10px 0; }
+        .forecast {
+            background: #eef;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌤️ Météo à {{ ville }}</h1>
+        
+        {% if meteo %}
+            <p class="info"><strong>Actuellement :</strong> <span id="desc">{{ meteo.description }}</span></p>
+            <p class="info">🌡️ Température : <span id="temp">{{ meteo.temperature }}°C</span></p>
+            <p class="info">💧 Humidité : <span id="humidite">{{ meteo.humidite }}%</span></p>
+            <p class="info">💨 Vent : <span id="vent">{{ meteo.vent }} m/s</span></p>
+        {% else %}
+            <p>❌ Impossible de récupérer la météo.</p>
+        {% endif %}
+
+        {% if previsions %}
+            {% for jour, valeurs in previsions.items() %}
+                <div class="forecast">
+                    <h2>📅 Prévisions pour {{ jour }}</h2>
+                    {% for prevision in valeurs %}
+                        <p>{{ prevision[0] }} - {{ prevision[1] }}°C, {{ prevision[2] }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>❌ Impossible de récupérer les prévisions.</p>
+        {% endif %}
+    </div>
+
+    <!-- Script de mise à jour en temps réel -->
+    <script>
+        function updateWeather() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error("Erreur :", data.error);
+                        return;
+                    }
+                    
+                    document.getElementById('desc').innerText = data.description;
+                    document.getElementById('temp').innerText = data.temperature + "°C";
+                    document.getElementById('humidite').innerText = data.humidite + "%";
+                    document.getElementById('vent').innerText = data.vent + " m/s";
+                })
+                .catch(error => console.error("Erreur lors de la mise à jour :", error));
+        }
+
+        setInterval(updateWeather, 5000); // Met à jour toutes les 10 secondes
+    </script>
+
+</body>
+</html>
